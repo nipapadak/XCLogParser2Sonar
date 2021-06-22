@@ -1,5 +1,5 @@
 //
-//  File.swift
+//  Input.swift
 //  
 //
 //  Created by Guillermo Ignacio Enriquez Gutierrez on 2021/06/22.
@@ -41,9 +41,9 @@ extension Input {
         return filePath
     }
 
-    func outputIssues(basePath: String?) throws -> [IssueO] {
+    func outputIssues(basePath: String?) throws -> Output {
         let all = (self.errors + self.warnings)
-        return all.map { issueInput -> IssueO in
+        let issuesOut = all.map { issueInput -> IssueO in
 
             return IssueO(
                 engineId: issueInput.type,
@@ -61,5 +61,6 @@ extension Input {
                 effortMinutes: 0,
                 secondaryLocations: nil)
         }
+        return Output(issues: issuesOut)
     }
 }

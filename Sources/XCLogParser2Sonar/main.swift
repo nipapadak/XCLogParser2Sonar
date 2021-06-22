@@ -1,5 +1,5 @@
 //
-//  File.swift
+//  main.swift
 //  
 //
 //  Created by Guillermo Ignacio Enriquez Gutierrez on 2021/06/22.
@@ -20,13 +20,14 @@ struct XCLogParser2SonarCommand: ParsableCommand {
     static var configuration: CommandConfiguration {
         return CommandConfiguration(
             commandName: "xclogparser2sonar",
-            abstract: "",
-            discussion: "this is the discussion",
-            version: "0.1")
+            abstract: "xclogparser2sonar converts output of `xclogparser --reporter issues` to JSON file that can be passed to SonarQube scanner via ",
+            discussion: "",
+            version: "0.1.1")
     }
 
     mutating func run() throws {
-        let url = URL(fileURLWithPath: issuesPath)
+        let pwd = URL(fileURLWithPath: FileManager.default.currentDirectoryPath)
+        let url = URL(fileURLWithPath: issuesPath, relativeTo: pwd)
         let str = try XCLogParser2SonarLogic().convert(inputFileUrl: url, basePath: basePath)
         print(str)
     }

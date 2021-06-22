@@ -5,6 +5,9 @@ import PackageDescription
 
 let package = Package(
     name: "xclogparser2sonar",
+    platforms: [
+            .macOS(.v10_11),
+        ],
     products: [
         .executable(name: "xclogparser2sonar", targets: ["XCLogParser2Sonar"]),
         .library(name: "xclogparser2sonarlib", targets: ["XCLogParser2SonarCore"]),
