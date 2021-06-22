@@ -14,7 +14,7 @@
         func testExample() throws {
             let sampleFileUrl = try XCTUnwrap(Bundle.testBundle.url(forResource: "example", withExtension: "json"))
             let basePath = "/Users/johndoe/Documents/code/path/MyApplication/"
-            let res = try XCLogParser2SonarLogic().convert(inputFileUrl: sampleFileUrl, basePath: basePath, pretty: false)
+            let res = try XCLogParser2SonarLogic().convert(inputFileUrl: sampleFileUrl, basePath: basePath, pretty: false, map2pbxproj: true)
             print(res)
         }
     }

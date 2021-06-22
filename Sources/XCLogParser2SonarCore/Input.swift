@@ -29,16 +29,29 @@ extension Input {
         return issueType
     }
 
-    func filePath(from issueInput: IssueI, basePath: String?) -> String {
+    /// Some warnings/errors that come from linker and entire project settings point to `*.xcodeproj` file, which is a folder and it will be discarded by sonar-scanner.
+    /// To avoid lossing these issues, filePath is converted to `*.xcodeproj/project.pbxproj`
+    ///
+    /// ```
+    /// INFO: External issues ignored for 2 unknown files, including: apps/smbc/ios/native/MyTarget.xcodeproj/,
+    /// ```
+    func map2bxproj(filePath: String, map2pbxproj: Bool) -> String {
+        if map2pbxproj && filePath.hasSuffix(".xcodeproj/") {
+            return filePath + "project.pbxproj"
+        }
+        return filePath
+    }
+
+    func filePath(from issueInput: IssueI, basePath: String?, map2pbxproj: Bool) -> String {
         guard let basePath = basePath else {
-            return issueInput.documentURL
+            return map2bxproj(filePath: issueInput.documentURL, map2pbxproj: map2pbxproj)
         }
         let filePath = issueInput.documentURL.hasPrefix(basePath) ?
         String(issueInput.documentURL.dropFirst(basePath.count)) :
         issueInput.documentURL.hasPrefix("file://\(basePath)") ?
         String(issueInput.documentURL.dropFirst("file://\(basePath)".count)) :
         issueInput.documentURL
-        return filePath
+        return map2bxproj(filePath: filePath, map2pbxproj: map2pbxproj)
     }
 
     func textRange(from issueInput: IssueI) -> IssueO.TextRange {
@@ -57,7 +70,7 @@ extension Input {
             endColumn: endColumn)
     }
 
-    func outputIssues(basePath: String?) throws -> Output {
+    func outputIssues(basePath: String?, map2pbxproj: Bool) throws -> Output {
         let all = (self.errors + self.warnings)
         let issuesOut = all.map { issueInput -> IssueO in
 
@@ -66,7 +79,7 @@ extension Input {
                 ruleId: "rule1",
                 primaryLocation: .init(
                     message: issueInput.title,
-                    filePath: filePath(from: issueInput, basePath: basePath),
+                    filePath: filePath(from: issueInput, basePath: basePath, map2pbxproj: map2pbxproj),
                     textRange: textRange(from: issueInput)),
                 type: issueType(from: issueInput),
                 severity: .init(number: issueInput.severity),

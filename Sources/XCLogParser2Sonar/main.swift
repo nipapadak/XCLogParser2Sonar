@@ -20,6 +20,9 @@ struct Command: ParsableCommand {
     @Flag(help: "Flag to output a pretty printed JSON")
     var pretty = false
 
+    @Flag(help: "Map xcodeproj to pbxproj. Some issues will point to xcodeproj file which is a folder. This flag maps to the inner pbxproj so the issue is not discarded by sonar scanner")
+    var map2pbxproj = false
+
     static var configuration: CommandConfiguration {
         return CommandConfiguration(
             commandName: "xclogparser2sonar",
@@ -31,7 +34,7 @@ struct Command: ParsableCommand {
     mutating func run() throws {
         let pwd = URL(fileURLWithPath: FileManager.default.currentDirectoryPath)
         let url = URL(fileURLWithPath: issuesPath, relativeTo: pwd)
-        let str = try XCLogParser2SonarLogic().convert(inputFileUrl: url, basePath: basePath, pretty: pretty)
+        let str = try XCLogParser2SonarLogic().convert(inputFileUrl: url, basePath: basePath, pretty: pretty, map2pbxproj: map2pbxproj)
         print(str)
     }
 }
