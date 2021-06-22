@@ -4,25 +4,35 @@
 import PackageDescription
 
 let package = Package(
-    name: "xclogparser-to-sonar",
+    name: "xclogparser2sonar",
     products: [
-        // Products define the executables and libraries a package produces, and make them visible to other packages.
-        .library(
-            name: "xclogparser-to-sonar",
-            targets: ["xclogparser-to-sonar"]),
+        .executable(name: "xclogparser2sonar", targets: ["XCLogParser2Sonar"]),
+        .library(name: "xclogparser2sonarlib", targets: ["XCLogParser2SonarCore"]),
     ],
     dependencies: [
-        // Dependencies declare other packages that this package depends on.
-        // .package(url: /* package url */, from: "1.0.0"),
+        .package(url: "https://github.com/apple/swift-argument-parser", from: "0.4.3"),
     ],
     targets: [
-        // Targets are the basic building blocks of a package. A target can define a module or a test suite.
-        // Targets can depend on other targets in this package, and on products in packages this package depends on.
         .target(
-            name: "xclogparser-to-sonar",
-            dependencies: []),
+            name: "XCLogParser2Sonar",
+            dependencies: [
+                "XCLogParser2SonarCore",
+                .product(name: "ArgumentParser", package: "swift-argument-parser"),
+            ]
+        ),
+        .target(
+            name: "XCLogParser2SonarCore",
+            dependencies: [
+            ]
+        ),
         .testTarget(
-            name: "xclogparser-to-sonarTests",
-            dependencies: ["xclogparser-to-sonar"]),
+            name: "XCLogParser2SonarTests",
+            dependencies: [
+                "XCLogParser2Sonar"
+            ],
+            resources: [
+                .copy("example.json")
+            ]
+        ),
     ]
 )
