@@ -41,6 +41,22 @@ extension Input {
         return filePath
     }
 
+    func textRange(from issueInput: IssueI) -> IssueO.TextRange {
+        /// Make sure end points are bigger than start points to avoid sonar-scanner IllegalArgumentException
+        ///
+        ///     ERROR: Error during SonarScanner execution
+        ///     java.lang.IllegalArgumentException:
+        ///     Start pointer [line=23, lineOffset=5] should be before end pointer [line=23, lineOffset=5]
+        ///
+        let endLine = issueInput.startingLineNumber < issueInput.endingLineNumber ? issueInput.endingLineNumber : nil
+        let endColumn = issueInput.startingColumnNumber < issueInput.endingColumnNumber ? issueInput.endingColumnNumber : nil
+        return IssueO.TextRange(
+            startLine: issueInput.startingLineNumber + 1,
+            endLine: endLine, // + 1, sonarqube says "1 indexed" but no fix needed (xcloparser already returns 1 indexed?)s
+            startColumn: issueInput.startingColumnNumber,
+            endColumn: endColumn)
+    }
+
     func outputIssues(basePath: String?) throws -> Output {
         let all = (self.errors + self.warnings)
         let issuesOut = all.map { issueInput -> IssueO in
@@ -51,11 +67,7 @@ extension Input {
                 primaryLocation: .init(
                     message: issueInput.title,
                     filePath: filePath(from: issueInput, basePath: basePath),
-                    textRange: .init(
-                        startLine: issueInput.startingLineNumber + 1,
-                        endLine: issueInput.endingLineNumber + 1,
-                        startColumn: issueInput.startingColumnNumber,
-                        endColumn: issueInput.endingColumnNumber)),
+                    textRange: textRange(from: issueInput)),
                 type: issueType(from: issueInput),
                 severity: .init(number: issueInput.severity),
                 effortMinutes: 0,
