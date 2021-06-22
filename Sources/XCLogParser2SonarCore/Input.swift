@@ -51,8 +51,8 @@ extension Input {
         let endLine = issueInput.startingLineNumber < issueInput.endingLineNumber ? issueInput.endingLineNumber : nil
         let endColumn = issueInput.startingColumnNumber < issueInput.endingColumnNumber ? issueInput.endingColumnNumber : nil
         return IssueO.TextRange(
-            startLine: issueInput.startingLineNumber + 1,
-            endLine: endLine, // + 1, sonarqube says "1 indexed" but no fix needed (xcloparser already returns 1 indexed?)s
+            startLine: issueInput.startingLineNumber, // + 1, sonarqube says "1 indexed" but no fix needed (xcloparser already returns 1 indexed?)
+            endLine: endLine, // + 1, sonarqube says "1 indexed" but no fix needed (xcloparser already returns 1 indexed?)
             startColumn: issueInput.startingColumnNumber,
             endColumn: endColumn)
     }
