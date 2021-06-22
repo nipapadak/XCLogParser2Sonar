@@ -18,7 +18,7 @@ struct Command: ParsableCommand {
     var issuesPath: String
 
     @Flag(help: "Flag to output a pretty printed JSON")
-    var pretty: Bool
+    var pretty = false
 
     static var configuration: CommandConfiguration {
         return CommandConfiguration(
