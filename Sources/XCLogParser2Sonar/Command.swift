@@ -9,13 +9,16 @@ import Foundation
 import XCLogParser2SonarCore
 import ArgumentParser
 
-struct XCLogParser2SonarCommand: ParsableCommand {
+struct Command: ParsableCommand {
 
     @Option(name: .shortAndLong, help: "Absolute path to the root of the repository. If a JSON result has `basePath` as prefix filePath will be cut.")
     var basePath: String?
 
     @Option(name: .shortAndLong, help: "Path to issues JSON file (output of `xclogparser --reporter issues`.")
     var issuesPath: String
+
+    @Flag(help: "Flag to output a pretty printed JSON")
+    var pretty: Bool
 
     static var configuration: CommandConfiguration {
         return CommandConfiguration(
@@ -28,9 +31,9 @@ struct XCLogParser2SonarCommand: ParsableCommand {
     mutating func run() throws {
         let pwd = URL(fileURLWithPath: FileManager.default.currentDirectoryPath)
         let url = URL(fileURLWithPath: issuesPath, relativeTo: pwd)
-        let str = try XCLogParser2SonarLogic().convert(inputFileUrl: url, basePath: basePath)
+        let str = try XCLogParser2SonarLogic().convert(inputFileUrl: url, basePath: basePath, pretty: pretty)
         print(str)
     }
 }
 
-XCLogParser2SonarCommand.main()
+Command.main()

@@ -1,3 +1,5 @@
-# xclogparser-to-sonar
+# XCLogParser2Sonar
 
-A description of this package.
+
+
+https://docs.sonarqube.org/latest/analysis/generic-issue/
