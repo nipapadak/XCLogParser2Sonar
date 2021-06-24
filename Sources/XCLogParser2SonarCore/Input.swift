@@ -63,10 +63,23 @@ extension Input {
         ///
         let endLine = issueInput.startingLineNumber < issueInput.endingLineNumber ? issueInput.endingLineNumber : nil
         let endColumn = issueInput.startingColumnNumber < issueInput.endingColumnNumber ? issueInput.endingColumnNumber : nil
+        var startLine = issueInput.startingLineNumber
+        let startColumn = issueInput.startingColumnNumber
+        if (endLine == nil || endLine == 0) &&
+            (endColumn == nil || endColumn == 0) &&
+            issueInput.startingLineNumber == 0 &&
+            issueInput.startingColumnNumber == 0
+        {
+            /// Only when the issue does not have line startLine points to 0. This causes problems in sonar-scanner because startLine is "1 indexed"
+            ///
+            ///     ERROR:  Error during SonarScanner execution
+            ///     java.lang.IllegalArgumentException: 0 is not a valid line for a file
+            startLine = 1
+        }
         return IssueO.TextRange(
-            startLine: issueInput.startingLineNumber, // + 1, sonarqube says "1 indexed" but no fix needed (xcloparser already returns 1 indexed?)
-            endLine: endLine, // + 1, sonarqube says "1 indexed" but no fix needed (xcloparser already returns 1 indexed?)
-            startColumn: issueInput.startingColumnNumber,
+            startLine: startLine, // sonarqube says this should be "1 indexed". It seems xclogparser returns 1 indexed (almost always)
+            endLine: endLine, // sonarqube says this should be "1 indexed". It seems xclogparser returns 1 indexed (almost always)
+            startColumn: startColumn,
             endColumn: endColumn)
     }
 
@@ -74,7 +87,7 @@ extension Input {
         let all = (self.errors + self.warnings)
         let issuesOut = all.map { issueInput -> IssueO in
 
-            return IssueO(
+            let out = IssueO(
                 engineId: issueInput.type,
                 ruleId: "rule1",
                 primaryLocation: .init(
@@ -85,6 +98,7 @@ extension Input {
                 severity: .init(number: issueInput.severity),
                 effortMinutes: 0,
                 secondaryLocations: nil)
+            return out
         }
         return Output(issues: issuesOut)
     }
