@@ -4,7 +4,7 @@ Tool for converting [XCLogParser](https://github.com/MobileNativeFoundation/XCLo
 
 ## 📝 Description
 
-`xclogparser2sonar` is a simple command-line utility written in Swift that reads output of xclogparser and converts it into [SonarQube generic issues](https://docs.sonarqube.org/latest/analysis/generic-issue/) that can be imported via flag `sonar.externalIssuesReportPaths`.
+`xclogparser2sonar` is a simple command-line utility written in Swift that reads output of xclogparser and converts it into [SonarQube generic issues](https://docs.sonarqube.org/latest/analysis/generic-issue/) that can be imported via flag `sonar.externalIssuesReportPaths`, in other words, *all xcode warnings can be imported into sonarqube!*.
 
 - Sonarqube expects issues paths are relative to the root of the repository so please make sure to provide the absolute path to your repository using `--base-path`.
 - Some linker, target integrity, etc warnings/errors might come files sonarqube does not know (for example `*.xcodeproj/`) and sonar scanner might ignore these issues. One way to work-around this is to map issues from `*.xcodeproj/` to `*.xcodeproj/project.pbxproj`. Make sure sonarqube knows about `pbxproj` (I appended my pbxproj file path to `sonar.sources` flag) 
@@ -20,8 +20,6 @@ mint install nacho4d/XCLogParser2Sonar
 ## ▶️ Usage
 
 Simply call `xclogparser2sonar` with required `--issues-path` parameter and optional but recommended `--base-path` and `--map2pbxproj` parameters. In below example I wrote a full integration example. If you are already using sonar qube you should already have ① and partially ③ in place. 
-
-For parameters detailed explanation see `xclogparser2sonar --help`
 
 ### Full example
 
@@ -42,6 +40,31 @@ xclogparser2sonar \
 # ③ Now you can pass sonar-generic-issues.json to sonar scanner.
 sonar-scanner ... \
     -Dsonar.externalIssuesReportPaths=sonar-generic-issues.json
+```
+
+### Help
+For parameters detailed explanation see `xclogparser2sonar --help`
+
+```
+OVERVIEW: xclogparser2sonar converts output of `xclogparser --reporter issues` to
+JSON file that can be passed to SonarQube scanner via 
+
+USAGE: xclogparser2sonar [--base-path <base-path>] --issues-path <issues-path> [--pretty] [--map2pbxproj]
+
+OPTIONS:
+  -b, --base-path <base-path>
+                          Absolute path to the root of the repository. If a JSON
+                          result has `basePath` as prefix filePath will be cut. 
+  -i, --issues-path <issues-path>
+                          Path to issues JSON file (output of `xclogparser
+                          --reporter issues`. 
+  --pretty                Flag to output a pretty printed JSON 
+  --map2pbxproj           Map xcodeproj to pbxproj. Some issues will point to
+                          xcodeproj file which is a folder. This flag maps to the
+                          inner pbxproj so the issue is not discarded by sonar
+                          scanner 
+  --version               Show the version.
+  -h, --help              Show help information.
 ```
 
 
