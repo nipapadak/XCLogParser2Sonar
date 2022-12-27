@@ -18,10 +18,10 @@ extension Input {
         let issueType: IssueO.IssueType
         if issueInput.documentURL.hasSuffix(".swift") {
             // Swift issues should be fixed. No mercy.
-            issueType = .bug
+            issueType = .codeSmell
         } else if (issueInput.detail ?? "").hasPrefix("ld: ") {
             // linker issues are potentially harmful. Elevate issue type
-            issueType = .bug
+            issueType = .codeSmell
         } else {
             // Anything else will be considered as code smell... lets see how this works
             issueType = .codeSmell
